@@ -1,0 +1,69 @@
+Specification:
+
+Here are some specific requirements of your program and your experiments:
+
+1.Your program should run on a recent Mac Book Pro running Python 2.7.13 (the set-up where it will be graded). It should follow PEP 8 Coding Guidelines, and be split into reasonable functions. All the files needed to run your code as well as your experiment results should be put into the Hw1.zip file you submit. There should be a readme.txt in this ZIP file that let's me know who was on your team and anything else important about your code. If your code is written under Windows or Linux, it should work on a Mac without you having to do anything special, but it wouldn't hurt to check. Be aware you should not use any features of Python 3.x that are not in Python 2.7.x.
+
+2.Your program should run without any additional, non-default libraries installed (you can use re for regular expressions). For this HW, I want you to code pretty much from scratch. Do not assume I have Numpy or a neural net library.
+
+3.Your program should run from the command line and understand the parameters:
+
+python perceptron.py activation training_alg ground_file distribution num_train num_test epsilon
+
+Below is a concrete example of filling in the parameters in this line:
+
+python perceptron.py relu perceptron my_nested_bool_fn.txt bool 500 250 0.2
+
+4.Your program should use the activation command line argument to determine the activation function used by your perceptron. Your program should accept and implement the possibilities: threshold (by this I mean a step function), tanh (use either tanh or logistic function), and relu.
+
+5.Your program should use the training_alg command line argument to determine the training algorithm used by your perceptron. Your program should accept the possibilities: perceptron and winnow. The choice should correspond to using either the perceptron or winnow update rule from class.
+
+6.Your program should use the ground_file command line argument to read in and parse a ground function from the file of the given name. If the file is not parseable, it should just output "NOT PARSEABLE" and stop. Your program should be able to parse two formats for ground_file: nested boolean function and threshold function. A file containing a nested boolean function looks like (where the second line is a regex):
+
+NBF
+([+|-]\d+(\s+(:?AND|OR)\s+\d+)*)?
+
+For example,
+NBF
++1 OR -2 AND +5 AND +3
+
+which represents the boolean function on five inputs f(x1,x2,x3,x4,x5):=(((x1∨¬x2)∧x5)∧x3). If the line after NBF is empty, we view it as the always 0 function. A file containing a threshold function looks like (where the second and third line are regex):
+
+TF
+[+|-]\d+
+([+|-]\d+(\s+[+|-]\d+)*)?
+
+For example,
+TF
++15
++10 -5 +30
+
+which represents the function f:ℝ3→{0,1} given by f(x1,x2,x3)=1 if and only 10x1−5x2+30x3≥15.
+
+7.Your program should use the distribution command line argument to determine the distribution that your training and test examples are drawn from. Your program should recognize the values bool for the uniform boolean distribution and sphere, for the uniform unit spherical distribution. In the case where the input file is a nested boolean function, this argument should be ignored and the uniform boolean distribution should be used. To generate an element from one of these distributions, one should first determine the number n of inputs to the ground function. For the uniform boolean distribution, your program should use n calls to random.randint(0, 1) to generate an n-bit vector. For the uniform unit spherical distribution, your program should use n calls to random.random() to generate an n-dimensional floating point vector and then normalize the result into a unit vector.
+
+8.Your program should use the num_train, num_test, and epsilon command line arguments as follows: First, it should generate num_train many examples according to the current command line distribution and the ground function on the inputs. For each example generated, it should train according to that example and the training algorithm, then output to stdout a line in the format:
+
+x1,x2,...,xn:y:[update|no update]\n
+
+For example, if the weights did not change when training on the input-output example ([1,1,0,0],1) then your program should output:
+
+1,1,0,0:1:no update
+
+Once your program has completed training, it should compute num_test many test inputs, x⃗ , according to the current command line distribution and the ground function on the inputs. For each test, it should compute and output:
+
+x1,x2,...,xn:y_pred:y_actual:error\n
+
+Here ypred is what the trained perceptron would compute on x⃗ , yactual is when the ground function outputs on x⃗ , and error is ∣∣ypred−yactual∣∣. For example, if the test vector was [1,0,1,1] and the prediction of the perceptron on this input was 1 and this was also the ground function's value, then the line would look like:
+
+1,0,1,1:1:1:0
+
+After the last line output because of test data, you should compute the average error on the test data, output it followed by a line with the value of epsilon, followed by a line which either says "TRAINING SUCCEEDED" or "TRAINING FAILED" depending on whether the average was less than epsilon. Below is an example of how this might look:
+
+Average Error:0.19
+Epsilon:0.2
+TRAINING SUCCEEDED
+
+9.You should design and carry out experiments to see how well the perceptron update rules let you learn a nested boolean formula or a linear threshold function under the uniform boolean or uniform unit spherical distributions. For spherical distributions only test with respect to linear threshold function learning. In the perceptron update rule, uniform boolean distribution case in particular, do your experiments jive with our PAC learning results from class? You should describe your experiments in the file Experiments1.txt, and all the experimental runs you did for it should be in an Runs1 subfolder of your Hw1.zip file.
+
+10.You should design and carry out experiments to see how well the winnow rule let you learn a linear threshold function under the uniform unit spherical distribution under different choice of activation function. You should describe your experiments in the file Experiments2.txt, and all the experimental runs you did for it should be in an Runs2 subfolder of your Hw1.zip file.
