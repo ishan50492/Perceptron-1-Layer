@@ -413,7 +413,7 @@ def validate_ground_file():
         if lines[0].replace('\n','')=="NBF":
             print(lines[1])
             return validate_NBF(lines[1])
-        elif lines[0]=="TF":
+        elif lines[0].replace('\n','')=="TF":
             return validate_TF(lines[1],lines[2])
 
 
